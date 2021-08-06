@@ -9,6 +9,10 @@ import pandas as pd
 import geopandas as gpd
 from dash.dependencies import Input, Output
 from common import *
+import psycopg2
+from decouple import config
+import pandas.io.sql as sqlio
+
 
 import folium
 from folium.plugins import MarkerCluster, FastMarkerCluster
@@ -80,7 +84,28 @@ f3 = open("data/Delhi_Wards.geojson", "r")
 delhi_wards_gdf = gpd.read_file("data/Delhi_Wards.geojson")
 delhi_wards_geojson = json.load(f3)
 
-df = pd.read_csv("data/Environ_RawData.csv", encoding='latin1')
+# Connect to GDi-AgMark Database
+DB_HOST = config('DB_HOST_Env')
+DB_NAME = config('DB_NAME_Env')
+DB_USER = config('DB_USER_Env')
+DB_PASS = config('DB_PASS_Env')
+
+conn = psycopg2.connect(dbname=DB_NAME,
+                        user=DB_USER,
+                        password=DB_PASS,
+                        host=DB_HOST)
+cur = conn.cursor()
+cur.execute("SET search_path TO greendelhischema;")
+sql = "SELECT * FROM complaints;"
+df = sqlio.read_sql_query(sql, conn)
+df.columns = ['Compliant ID', 'Offences', 'Date and Time', 'Geo Location',
+       'Latitude', 'Longitude', 'Department Name', 'Assigned User Name',
+       'Assigned User ID', 'Assigned User Mobile', 'Designation', 'SLA',
+       'SLA Timeline', 'Overdue', 'User Remarks', 'District', 'State',
+       'Status', 'Time value', 'Year', 'Month', 'Date', 'Day of week']
+
+
+#df = pd.read_csv("data/Environ_RawData.csv", encoding='latin1')
 #df.index = pd.to_datetime(df['Date and Time'])
 df['Date'] = df['Month'].astype(str) + '/' + df['Year'].astype(str)
 df.index = pd.to_datetime(df['Date and Time']).dt.date
