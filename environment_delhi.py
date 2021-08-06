@@ -6,6 +6,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import json
 import pandas as pd
+import geopandas as gpd
 from dash.dependencies import Input, Output
 from common import *
 
@@ -19,6 +20,7 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 
 from datetime import datetime as dt
+import jenkspy
 
 # FUNCTIONS THAT'LL BE USED
 def get_geojson_grid(upper_right, lower_left, lat_res = 0.008993300000000204, lon_res = 0.0096989, km_res=1):
@@ -71,6 +73,12 @@ def get_geojson_grid(upper_right, lower_left, lat_res = 0.008993300000000204, lo
 # Datasets
 f = open("data/delhi.geojson", "r")
 delhi_geojson = json.load(f)
+f2 = open("data/delhi_ac.geojson", "r")
+delhi_ac_geojson = json.load(f2)
+delhi_ac_gdf = gpd.read_file('data/delhi_ac.geojson')
+f3 = open("data/Delhi_Wards.geojson", "r")
+delhi_wards_gdf = gpd.read_file("data/Delhi_Wards.geojson")
+delhi_wards_geojson = json.load(f3)
 
 df = pd.read_csv("data/Environ_RawData.csv", encoding='latin1')
 #df.index = pd.to_datetime(df['Date and Time'])
@@ -203,7 +211,7 @@ filters.append(
             multi=False,
             clearable=True,
             searchable=True,
-            placeholder='Select Department',
+            placeholder='Select Department'
         ),
     ]
 )
@@ -237,6 +245,16 @@ filters.append(
 
 # Actual content on the right side. Append each row one by one.
 right_content= []
+
+right_content.append(
+    html.Div(className="row margin1", children=[
+        html.Div(className="col-md-12 chart_container", children=[
+            html.H4('Choropleth Map for selected grievances'),
+            html.Iframe(id='choropleth-map', srcDoc=None, width='95%', height='500')
+             ])
+    ])
+)
+
 
 right_content.append(
     html.Div(className="row margin1", children=[
@@ -283,7 +301,8 @@ def get_variety_values(offences):
 
 # CALLBACKS - RIGHT CONTENT
 @app.callback(
-    [Output('grid-map','srcDoc'),
+    [Output('choropleth-map', 'srcDoc'),
+     Output('grid-map', 'srcDoc'),
      Output('heat-map', 'srcDoc')],
     [Input('Department', 'value'),
      Input('Offences', 'value'),
@@ -297,17 +316,95 @@ def get_heatmap(department, offencelist, start_date, end_date, kmres):
 
     ## PREPARE REQUIRED FILTERED DATA
     ggg = df.copy()
+    polygons_wards = delhi_wards_gdf.copy()
+    polygons_acs = delhi_ac_gdf.copy()
+
     df_c = ggg.loc[str(start_date):str(end_date)]
     if department is not None:
         df_c = df_c[df_c['Department Name'] == department].reset_index(drop=True)
     else:
         df_c = df_c
     df_c = df_c[df_c['Offences'] == offencelist].reset_index(drop=True)
+
+    gdf = gpd.GeoDataFrame(df_c,
+                           geometry=gpd.points_from_xy(df_c.Longitude, df_c.Latitude)
+                           ).reset_index(drop=True)
+    points = gpd.GeoDataFrame(gdf.copy())
+
     # Ensure you're handing it floats
     df_c['Latitude'] = df_c['Latitude'].astype(float)
     df_c['Longitude'] = df_c['Longitude'].astype(float)
 
     # MAPS
+
+    ## Choropleths
+    # Spatial Joins - Wards
+    pointsInWards = gpd.sjoin(points.set_crs('epsg:4326'), polygons_wards, how="inner", op='intersects')
+
+    pointsInWards = pointsInWards.groupby('Ward_Name')[['index']].count().reset_index()
+    pointsInWards.columns = ['Ward_Name', 'NumberofComplaints']
+
+    # Spatial Joins - ACs
+    pointsInACs = gpd.sjoin(points.set_crs('epsg:4326'), polygons_acs, how="inner", op='intersects')
+
+    pointsInACs = pointsInACs.groupby('AC_NAME')[['PC_ID']].count().reset_index()
+    pointsInACs.columns = ['AC_NAME', 'NumberofComplaints']
+
+    polygons_wards = polygons_wards.merge(pointsInWards, on='Ward_Name', how='left').fillna(0).sort_values(
+        by='NumberofComplaints', ascending=False)
+    polygons_acs = polygons_acs.merge(pointsInACs, on='AC_NAME', how='left').fillna(0).sort_values(
+        by='NumberofComplaints', ascending=False)
+
+    breaks_wards = jenkspy.jenks_breaks(polygons_wards['NumberofComplaints'], nb_class=5)
+    breaks_acs = jenkspy.jenks_breaks(polygons_acs['NumberofComplaints'], nb_class=5)
+
+    m = folium.Map(location=[centre_lat, centre_lon],
+                   zoom_start=10, tiles="OpenStreetMap")
+
+    ward_choropleth = folium.Choropleth(
+        geo_data=polygons_wards,
+        name="Ward_choropleth",
+        data=polygons_wards,
+        columns=["Ward_Name", "NumberofComplaints"],
+        key_on='feature.properties.Ward_Name',
+        fill_Color='OrRd',
+        fill_opacity=0.7,
+        line_opacity=0.2,
+        legend_name="Number of Complaints",
+        bins=breaks_wards,  # Natural Breaks
+        highlight=True
+    ).add_to(m)
+
+    ward_choropleth.geojson.add_child(
+        folium.features.GeoJsonTooltip(
+            fields=['Ward_Name', 'NumberofComplaints'],
+            aliases=['Ward:', 'Number of Complaints:'],
+            style=("background-color: white; color: #333333; font-family: arial; font-size: 12px; padding: 10px;")))
+
+    ac_choropleth = folium.Choropleth(
+        geo_data=polygons_acs,
+        name="AC_choropleth",
+        data=polygons_acs,
+        columns=["AC_NAME", "NumberofComplaints"],
+        key_on='feature.properties.AC_NAME',
+        fill_Color='OrRd',
+        fill_opacity=0.7,
+        line_opacity=0.2,
+        legend_name="Number of Complaints",
+        bins=breaks_acs,  # Natural Breaks,
+        show=False,
+        highlight=True
+    ).add_to(m)
+
+    ac_choropleth.geojson.add_child(
+        folium.features.GeoJsonTooltip(
+            fields=['AC_NAME', 'NumberofComplaints'],
+            aliases=['Assembly:', 'Number of Complaints:'],
+            style=("background-color: white; color: #333333; font-family: arial; font-size: 12px; padding: 10px;")))
+
+    folium.LayerControl('topright', collapsed=True).add_to(m)
+
+    m.save("Choropleth.html")
 
     ### Full map - clusters
     map_hooray2 = folium.Map(location=[centre_lat, centre_lon],
@@ -322,7 +419,25 @@ def get_heatmap(department, offencelist, start_date, end_date, kmres):
     # Plot HeatMap on the map
     HeatMap(heat_data, name="HeatMap", radius=radius, min_opacity=0.7, max_opacity=1,gradient={0.4:"green", 0.6:"yellow", 1:"red"}, blur=6).add_to(map_hooray2)
 
-    folium.GeoJson(delhi_geojson, name='delhi_boundary',
+    folium.GeoJson(delhi_geojson, name='district_map',
+                   style_function=lambda x: {
+                       'color': 'black',
+                       'weight': 4,
+                       "opacity": 1,
+                       'fillOpacity': 0,
+                       'interactive': False
+                   }).add_to(map_hooray2)
+
+    folium.GeoJson(delhi_ac_geojson, name='Assembly_map', show=False,
+                   style_function=lambda x: {
+                       'color': 'black',
+                       'weight': 4,
+                       "opacity": 1,
+                       'fillOpacity': 0,
+                       'interactive': False
+                   }).add_to(map_hooray2)
+
+    folium.GeoJson(delhi_wards_geojson, name='Wards_map', show=False,
                    style_function=lambda x: {
                        'color': 'black',
                        'weight': 4,
@@ -404,7 +519,7 @@ def get_heatmap(department, offencelist, start_date, end_date, kmres):
         #folium.LayerControl().add_to(m)
         m.save("Delhi_HeatMap_Grid.html")
 
-    return open('Delhi_HeatMap_Grid.html', 'r').read(), open('Delhi_HeatMap_Cluster.html', 'r').read()
+    return open('Choropleth.html').read(), open('Delhi_HeatMap_Grid.html', 'r').read(), open('Delhi_HeatMap_Cluster.html', 'r').read()
 
 
 if __name__ =='__main__':
