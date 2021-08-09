@@ -59,7 +59,8 @@ def getLayout(app, filters, side_page_menu, right_content):
                     html.Div(className="col-md-2 navbar-fixed-left", id="", children=[
                         html.Div(className="row", children=[
                             html.Div(className="col-md-1", children=[
-                                html.Div(side_page_menu)]
+                               # html.Div(side_page_menu)
+                                ]
                             ),
                             html.Div(className="col-md-10", id="control-panel", children=[
                                 html.Div(filters)]
