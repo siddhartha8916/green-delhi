@@ -22,12 +22,21 @@ def getHeader(app):
                             html.A(
                                 html.Img(
                                     src=app.get_asset_url(
-                                        "gdi-high-logo.png"),
+                                        "DPCC Logo.png"),
                                     style={
                                         'float': 'right', 'height': '50px', 'margin-top': '1.5rem'}
                                 ),
-                                href="https://gdipartners.in/"
+                                href="https://www.dpcc.delhigovt.nic.in/"
                             ),
+                            html.A(
+                                html.Img(
+                                    src=app.get_asset_url(
+                                        "Dilli Sarkaar Logo.png"),
+                                    style={
+                                        'float': 'right', 'height': '50px', 'margin-top': '1.5rem'}
+                                ),
+                                href="https://delhi.gov.in/"
+                            )
                         ]
                     )
                 ]

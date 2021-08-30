@@ -12,6 +12,8 @@ from common import *
 import psycopg2
 from decouple import config
 import pandas.io.sql as sqlio
+import dash_table
+
 
 
 import folium
@@ -111,7 +113,9 @@ df['Date'] = df['Month'].astype(str) + '/' + df['Year'].astype(str)
 df.index = pd.to_datetime(df['Date and Time']).dt.date
 df.index = pd.to_datetime(df.index)
 df = df.sort_index()
-
+gdf = gpd.GeoDataFrame(df,
+                       geometry=gpd.points_from_xy(df.Longitude,df.Latitude)
+                      ).reset_index(drop=True)
 # external_stylesheets1 = [
 #     {
 #         'href': 'https://use.fontawesome.com/releases/v5.8.1/css/all.css',
@@ -273,6 +277,41 @@ right_content= []
 
 right_content.append(
     html.Div(className="row margin1", children=[
+        html.Div(className="col-md-3 chart_container", children=[
+            dash_table.DataTable(
+                id="data-table",
+                style_header={
+                    'backgroundColor': '#5fa2db',
+                    'fontWeight': 'bold',
+                    'color':'white'
+                },
+                sort_action="native",
+                sort_mode="multi",
+                editable=True,
+                page_size=10
+
+            )
+             ]),
+html.Div(className="col-md-3 chart_container", children=[
+            dash_table.DataTable(
+                id="data-table_ac",
+                style_header={
+                    'backgroundColor': '#5fa2db',
+                    'fontWeight': 'bold',
+                    'color':'white'
+                },
+                sort_action="native",
+                sort_mode="multi",
+                editable=True,
+                page_size=10
+
+            )
+             ])
+    ]),
+)
+
+right_content.append(
+    html.Div(className="row margin1", children=[
         html.Div(className="col-md-12 chart_container", children=[
             html.H4('Choropleth Map for selected grievances'),
             html.Iframe(id='choropleth-map', srcDoc=None, width='95%', height='500')
@@ -325,8 +364,12 @@ def get_variety_values(offences):
     return 'Illegal dumping of Garbage on road sides/ vacant land'
 
 # CALLBACKS - RIGHT CONTENT
+
+
 @app.callback(
-    [Output('choropleth-map', 'srcDoc'),
+    [Output('data-table', 'data'), Output('data-table', 'columns'),
+     Output('data-table_ac', 'data'), Output('data-table_ac', 'columns'),
+     Output('choropleth-map', 'srcDoc'),
      Output('grid-map', 'srcDoc'),
      Output('heat-map', 'srcDoc')],
     [Input('Department', 'value'),
@@ -359,6 +402,7 @@ def get_heatmap(department, offencelist, start_date, end_date, kmres):
     # Ensure you're handing it floats
     df_c['Latitude'] = df_c['Latitude'].astype(float)
     df_c['Longitude'] = df_c['Longitude'].astype(float)
+
 
     # MAPS
 
@@ -544,8 +588,16 @@ def get_heatmap(department, offencelist, start_date, end_date, kmres):
         #folium.LayerControl().add_to(m)
         m.save("Delhi_HeatMap_Grid.html")
 
-    return open('Choropleth.html').read(), open('Delhi_HeatMap_Grid.html', 'r').read(), open('Delhi_HeatMap_Cluster.html', 'r').read()
+        # Data Table
+
+    return pointsInWards.to_dict('records'), [{"name": i, "id": i} for i in pointsInWards.columns],\
+           pointsInACs.to_dict('records'), [{"name": i, "id": i} for i in pointsInACs.columns],\
+           open('Choropleth.html').read(),\
+           open('Delhi_HeatMap_Grid.html', 'r').read(),\
+           open('Delhi_HeatMap_Cluster.html', 'r').read()
 
 
 if __name__ =='__main__':
-    app.run_server(debug=True, use_reloader=False, host='0.0.0.0')
+    app.run_server(debug=True, use_reloader=False,
+                   #host='0.0.0.0'
+                   )
