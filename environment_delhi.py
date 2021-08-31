@@ -79,6 +79,7 @@ def get_geojson_grid(upper_right, lower_left, lat_res = 0.008993300000000204, lo
 # Datasets
 f = open("data/delhi.geojson", "r")
 delhi_geojson = json.load(f)
+delhi_gdf = gpd.read_file('data/delhi.geojson')
 f2 = open("data/delhi_ac.geojson", "r")
 delhi_ac_geojson = json.load(f2)
 delhi_ac_gdf = gpd.read_file('data/delhi_ac.geojson')
@@ -86,7 +87,7 @@ f3 = open("data/Delhi_Wards.geojson", "r")
 delhi_wards_gdf = gpd.read_file("data/Delhi_Wards.geojson")
 delhi_wards_geojson = json.load(f3)
 
-# Connect to GDi-AgMark Database
+# Connect to Database -- Details in .env file.
 DB_HOST = config('DB_HOST_Env')
 DB_NAME = config('DB_NAME_Env')
 DB_USER = config('DB_USER_Env')
@@ -97,6 +98,8 @@ conn = psycopg2.connect(dbname=DB_NAME,
                         password=DB_PASS,
                         host=DB_HOST)
 cur = conn.cursor()
+
+# Extract and transform required data from the database
 cur.execute("SET search_path TO greendelhischema;")
 sql = "SELECT * FROM complaints;"
 df = sqlio.read_sql_query(sql, conn)
@@ -116,18 +119,8 @@ df = df.sort_index()
 gdf = gpd.GeoDataFrame(df,
                        geometry=gpd.points_from_xy(df.Longitude,df.Latitude)
                       ).reset_index(drop=True)
-# external_stylesheets1 = [
-#     {
-#         'href': 'https://use.fontawesome.com/releases/v5.8.1/css/all.css',
-#         'rel': 'stylesheet',
-#         'integrity': 'sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf',
-#         'crossorigin': 'anonymous'
-#     }, {
-#         dbc.themes.SUPERHERO
-#     }
-# ]
 
-#APP
+# START DASH APP
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.SUPERHERO])
 server = app.server
 
@@ -158,7 +151,7 @@ side_page_menu.append(
     # ]
     # )
     # html.Div(className="area"),
-    html.Nav(className="main-menu" ,children=[
+    html.Nav(className="main-menu", children=[
         html.Ul(children=[
             html.Li(children=[
                 html.I(className="fa fa-home fa-lg"),
@@ -175,47 +168,45 @@ side_page_menu.append(
 )
 
 # add filters here
-filters = []
+filters= []
 
 filters.append(
     html.Div(className="filters", children=[
         html.Div(className='SmallHeader', children=[
-            html.H6('Time Period')
+            html.P('Time Period')
         ]
         ),
-    dcc.DatePickerRange(
-        id='date-picker-range',
-        calendar_orientation='horizontal',
-        day_size=39,
-        #end_date_placeholder_text="Return",
-        with_portal=True,
-        first_day_of_week=1,
-        reopen_calendar_on_clear=True,
-        is_RTL=False,
-        clearable=True,
-        number_of_months_shown=1,
-        min_date_allowed=df.index.min(),
-        max_date_allowed=df.index.max(),
-        initial_visible_month=dt(2020,11,1),
-        start_date=dt(2020,11,1).date(),
-        end_date=dt(2020,11,30).date(),
-        display_format='MMM Do, YY',
-        month_format='MMMM, YYYY',
-        minimum_nights=2,
-
-        persistence = True,
-        persisted_props=['start_date','end_date'],
-
-        updatemode='singledate'
-    )]
-    )
+        dcc.DatePickerRange(
+            id='date-picker-range',
+            calendar_orientation='horizontal',
+            day_size=39,
+            #end_date_placeholder_text="Return",
+            with_portal=True,
+            first_day_of_week=1,
+            reopen_calendar_on_clear=True,
+            is_RTL=False,
+            clearable=True,
+            number_of_months_shown=1,
+            min_date_allowed=df.index.min(),
+            max_date_allowed=df.index.max(),
+            initial_visible_month=dt(2020,11,1),
+            start_date=dt(2020,11,1).date(),
+            end_date=dt(2020,11,30).date(),
+            display_format='MMM Do, YY',
+            month_format='MMMM, YYYY',
+            minimum_nights=2,
+            persistence = True,
+            persisted_props=['start_date','end_date'],
+            updatemode='singledate'
+        )]
+             )
 
 )
 
 filters.append(
     html.Div(className="filters", children=[
         html.Div(className='SmallHeader', children=[
-            html.H6('Resolution (in sq.km)')
+            html.P('Resolution (in sq.km)')
         ]
         ),
         dash_daq.NumericInput(
@@ -229,7 +220,7 @@ filters.append(
 filters.append(
     html.Div(className="filters", children=[
         html.Div(className='SmallHeader', children=[
-            html.H6('Department')
+            html.P('Department')
         ]
         ),
         dcc.Dropdown(
@@ -246,12 +237,10 @@ filters.append(
 )
 )
 
-
-
 filters.append(
     html.Div(className="filters", children=[
         html.Div(className='SmallHeader', children=[
-            html.H6('Offences')
+            html.P('Offences')
         ]
         ),
         dcc.Dropdown(
@@ -273,10 +262,25 @@ filters.append(
 )
 
 # Actual content on the right side. Append each row one by one.
-right_content= []
+right_content = []
 
 right_content.append(
     html.Div(className="row margin1", children=[
+        html.Div(className="col-md-3 chart_container",children=[
+            dash_table.DataTable(
+                id="data-table-district",
+                style_header={
+                    'backgroundColor': '#5fa2db',
+                    'fontWeight': 'bold',
+                    'color': 'white'
+                },
+                sort_action="native",
+                sort_mode="single",
+                editable=False,
+                page_size=10
+
+            )
+             ]),
         html.Div(className="col-md-3 chart_container", children=[
             dash_table.DataTable(
                 id="data-table",
@@ -286,13 +290,13 @@ right_content.append(
                     'color':'white'
                 },
                 sort_action="native",
-                sort_mode="multi",
-                editable=True,
+                sort_mode="single",
+                editable=False,
                 page_size=10
 
             )
              ]),
-html.Div(className="col-md-3 chart_container", children=[
+        html.Div(className="col-md-3 chart_container", children=[
             dash_table.DataTable(
                 id="data-table_ac",
                 style_header={
@@ -301,8 +305,8 @@ html.Div(className="col-md-3 chart_container", children=[
                     'color':'white'
                 },
                 sort_action="native",
-                sort_mode="multi",
-                editable=True,
+                sort_mode="single",
+                editable=False,
                 page_size=10
 
             )
@@ -318,7 +322,6 @@ right_content.append(
              ])
     ])
 )
-
 
 right_content.append(
     html.Div(className="row margin1", children=[
@@ -363,11 +366,11 @@ def get_offence_options(department):
 def get_variety_values(offences):
     return 'Illegal dumping of Garbage on road sides/ vacant land'
 
+
 # CALLBACKS - RIGHT CONTENT
-
-
 @app.callback(
-    [Output('data-table', 'data'), Output('data-table', 'columns'),
+    [Output('data-table-district', 'data'), Output('data-table-district', 'columns'),
+     Output('data-table', 'data'), Output('data-table', 'columns'),
      Output('data-table_ac', 'data'), Output('data-table_ac', 'columns'),
      Output('choropleth-map', 'srcDoc'),
      Output('grid-map', 'srcDoc'),
@@ -384,6 +387,7 @@ def get_heatmap(department, offencelist, start_date, end_date, kmres):
 
     ## PREPARE REQUIRED FILTERED DATA
     ggg = df.copy()
+    polygons_districts = delhi_gdf.copy()
     polygons_wards = delhi_wards_gdf.copy()
     polygons_acs = delhi_ac_gdf.copy()
 
@@ -407,17 +411,25 @@ def get_heatmap(department, offencelist, start_date, end_date, kmres):
     # MAPS
 
     ## Choropleths
+
+    # Complaints in Districts
+    pointsInDistricts = pd.DataFrame(points.District.value_counts()).reset_index()
+    pointsInDistricts.columns = ['District', 'NumberofComplaints']
+    pointsInDistricts = pointsInDistricts.sort_values(by='NumberofComplaints',ascending=False)
+
     # Spatial Joins - Wards
     pointsInWards = gpd.sjoin(points.set_crs('epsg:4326'), polygons_wards, how="inner", op='intersects')
-
     pointsInWards = pointsInWards.groupby('Ward_Name')[['index']].count().reset_index()
     pointsInWards.columns = ['Ward_Name', 'NumberofComplaints']
+    pointsInWards = pointsInWards.sort_values(by='NumberofComplaints',ascending=False)
+
 
     # Spatial Joins - ACs
     pointsInACs = gpd.sjoin(points.set_crs('epsg:4326'), polygons_acs, how="inner", op='intersects')
-
     pointsInACs = pointsInACs.groupby('AC_NAME')[['PC_ID']].count().reset_index()
     pointsInACs.columns = ['AC_NAME', 'NumberofComplaints']
+    pointsInACs = pointsInACs.sort_values(by='NumberofComplaints',ascending=False)
+
 
     polygons_wards = polygons_wards.merge(pointsInWards, on='Ward_Name', how='left').fillna(0).sort_values(
         by='NumberofComplaints', ascending=False)
@@ -590,7 +602,8 @@ def get_heatmap(department, offencelist, start_date, end_date, kmres):
 
         # Data Table
 
-    return pointsInWards.to_dict('records'), [{"name": i, "id": i} for i in pointsInWards.columns],\
+    return pointsInDistricts.to_dict('records'), [{"name": i, "id": i} for i in pointsInDistricts.columns],\
+           pointsInWards.to_dict('records'), [{"name": i, "id": i} for i in pointsInWards.columns],\
            pointsInACs.to_dict('records'), [{"name": i, "id": i} for i in pointsInACs.columns],\
            open('Choropleth.html').read(),\
            open('Delhi_HeatMap_Grid.html', 'r').read(),\
