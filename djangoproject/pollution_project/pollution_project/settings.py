@@ -82,6 +82,9 @@ DATABASES = {
         'USER': 'greendelhiuser',
         'PASSWORD':'punP84EA4p3w',
         'HOST': 'gdi-common.cksdcefp5j3n.ap-south-1.rds.amazonaws.com',
+        'OPTIONS': {
+                    'options': '-c search_path=greendelhischema'
+                },
     }
 }
 
