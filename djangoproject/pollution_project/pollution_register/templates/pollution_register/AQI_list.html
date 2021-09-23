@@ -1,0 +1,39 @@
+{% extends "pollution_register/base.html" %}
+
+{% block content %}
+
+<p> List of Air Quality details </p>
+<table class="table table-borderless">
+    <thead class="border-bottom font-weight-bold">
+        <tr>
+            <td> Date </td>
+            <td> AQI</td>
+            <td> PM 2.5</td>
+            <td> PM 10</td>
+            <td>
+                <a href="{% url 'air_quality_insert' %}" class="btn btn-outline-success"> Add New </a>
+            </td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for aqi_element in air_quality_list %}
+        <tr>
+            <td>{{aqi_element.date}}</td>
+            <td>{{aqi_element.aqi}}</td>
+            <td>{{aqi_element.pm25}}</td>
+            <td>{{aqi_element.pm10}}</td>
+            <td>
+                <a href="{% url 'air_quality_update' aqi_element.id %}" class="btn text-secondary px-0"> Edit </a>
+                <form action="{% url 'air_quality_delete' aqi_element.id %}" method="post">
+                    {%csrf_token%}
+                    <button type="submit" class="btn"> Delete </button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+{% endblock content %}
