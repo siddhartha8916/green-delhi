@@ -2,12 +2,18 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
-<p> Update today's pollution status </p>
-<form action="" method="post" autocomplete="off">
-    {%csrf_token%}
-    {{form|crispy}}
+<div class="container-fluid mt-4 mx-4">
+    <div class="row">
+        <div class="col-sm-4">
+            <h4> Update today's pollution status </h4>
+            <form action="" method="post" autocomplete="off">
+                {%csrf_token%}
+                {{form|crispy}}
+                <button type="submit" , class="btn btn-success mt-4">Submit</button>
+                <a href="{% url 'air_quality_table' %}" class="btn btn-info mt-4">View data</a>
+            </form>
+        </div>
+    </div>
+</div>
 
-    <button type="submit", class="btn btn-success">Submit</button>
-    <a href="{% url 'air_quality_table' %}"  class="btn btn-secondary btn-block btn-lg">View data</a>
-</form>
 {% endblock content %}

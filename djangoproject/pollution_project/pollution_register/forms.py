@@ -8,5 +8,8 @@ class AQI_form(forms.ModelForm):
         labels = {'aqi' : 'AQI',
                   'pm25': 'PM 2.5',
                   'pm10' : 'PM 10'}
+        widgets = {
+            'date' : forms.DateInput(attrs={'type':'date'})
+            }
 
 

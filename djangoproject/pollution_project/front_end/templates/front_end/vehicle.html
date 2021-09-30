@@ -1,0 +1,83 @@
+{% extends 'front_end/homepagebase.html' %}
+{% load static %}
+{% block content %}
+<div class="container">
+  <div class="row mt-2">
+    <h3 class="text-center fs-2 fw-bold">Vehicular Pollution</h3>
+  </div>
+  <div class="d-grid gap-2 justify-content-center">
+    <img src="{% static '/images/vehicles-air-pollution.jpg' %}" class="img-fluid rounded mt-2" alt="...">
+  </div>
+</div>
+
+<div class="container">
+  <div class="row mt-3">
+    <ul class="nav nav-tabs nav-justified" id="myTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#basic" type="button"
+          role="tab" aria-controls="home" aria-selected="true">Basic Facts</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#policy" type="button" role="tab"
+          aria-controls="profile" aria-selected="false">Policy Measures</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#role" type="button" role="tab"
+          aria-controls="contact" aria-selected="false">Your Role</button>
+      </li>
+    </ul>
+    <div class="tab-content mt-2" id="myTabContent">
+      <div class="tab-pane fade show active" id="basic" role="tabpanel" aria-labelledby="home-tab">
+        <div class="row">
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt repudiandae deserunt perferendis voluptatem
+            quasi consectetur illum natus, minima distinctio delectus alias earum debitis soluta. Sunt itaque adipisci
+            laboriosam ad. Magnam.
+            Doloremque optio repudiandae ratione, voluptatum non illo sunt quae iure consequatur ipsa harum, similique
+            cupiditate pariatur enim dolorem itaque sint, incidunt ut dolore expedita veniam vitae provident. Tempora,
+            commodi necessitatibus?
+          </p>
+        </div>
+        <div class="row">
+          <div class="d-flex col-sm-6">
+            <img src="{% static '/images/vehicles-air-pollution.jpg' %}" class="img-fluid rounded mt-2" alt="...">
+          </div>
+          <div class="d-flex col-sm-6">
+            <img src="{% static '/images/vehicles-air-pollution.jpg' %}" class="img-fluid rounded mt-2" alt="...">
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="policy" role="tabpanel" aria-labelledby="profile-tab">
+        <div class="row">
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt repudiandae deserunt perferendis voluptatem
+            quasi consectetur illum natus, minima distinctio delectus alias earum debitis soluta. Sunt itaque adipisci
+            laboriosam ad. Magnam.
+            Doloremque optio repudiandae ratione, voluptatum non illo sunt quae iure consequatur ipsa harum, similique
+            cupiditate pariatur enim dolorem itaque sint, incidunt ut dolore expedita veniam vitae provident. Tempora, commodi necessitatibus?
+          </p>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="role" role="tabpanel" aria-labelledby="contact-tab">
+        <div class="row">
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Sunt repudiandae deserunt perferendis voluptatem
+            quasi consectetur illum natus, minima distinctio delectus alias earum debitis soluta. Sunt itaque adipisci
+            laboriosam ad. Magnam.
+            Doloremque optio repudiandae ratione, voluptatum non illo sunt quae iure consequatur ipsa harum, similique
+            cupiditate pariatur enim dolorem itaque sint, incidunt ut dolore expedita veniam vitae provident. Tempora,
+            commodi necessitatibus?
+          </p>
+        </div>
+        <div class="row">
+          <div class="d-flex col-sm-12 justify-content-center">
+            <img src="{% static '/images/vehicles-air-pollution.jpg' %}" class="img-fluid rounded mt-2" alt="...">
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}

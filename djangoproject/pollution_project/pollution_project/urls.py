@@ -16,7 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('air_quality/', include('pollution_register.urls'))
+    path('air_quality/', include('pollution_register.urls')),
+    path('home/', include('front_end.urls'))
 ]
