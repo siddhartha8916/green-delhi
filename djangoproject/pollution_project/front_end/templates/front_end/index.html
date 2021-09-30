@@ -48,7 +48,7 @@
   </div>
 </div>
 
-<div class="container-fluid" style="margin-top:100px; margin-bottom: 100px;">
+<div class="container-fluid" style="margin-top:100px; margin-bottom: 50px;">
   <div class="row">
     <div class="col-sm d-flex justify-content-center">
       <div class="card rounded" style="width: 20rem;">
@@ -87,41 +87,81 @@
   </div>
 </div>
 
-
-<div class="container-fluid">
+<div class="container">
   <div class="row">
-    <div class="col-sm-4">
-      <div class="container-fluid">
-        <div class="row">
-          <h4 class="text-center">Resources to help you fight pollution</h4>
-          <div class="col">
-            <div class="d-grid gap-2 col-12 mx-auto">
-              <button class="btn btn-outline-info mt-2 px-5 py-3" data-bs-toggle="modal" data-bs-target="#nursery"
-                type="button">Nurseries</button>
-              <button class="btn btn-outline-info mt-2 px-5 py-3" type="button">EV</button>
-              <button class="btn btn-outline-info mt-2 px-5 py-3" type="button">C&D Norms</button>
-              <button class="btn btn-outline-info mt-2 px-5 py-3" type="button">Bus Finder</button>
-              <button class="btn btn-outline-info mt-2 px-5 py-3" type="button">Cycling Routes</button>
-            </div>
-          </div>
-          <div class="col">
-            <div class="d-grid gap-2 col-12 mx-auto">
-              <button class="btn btn-outline-info mt-2 px-5 py-3" type="button">PUC</button>
-              <button class="btn btn-outline-info mt-2 px-5 py-3" type="button">Electric Heater</button>
-              <button class="btn btn-outline-info mt-2 px-5 py-3" type="button">Recycling</button>
-              <button class="btn btn-outline-info mt-2 px-5 py-3 mb-3" type="button">DMRC Routes</button>
-            </div>
-          </div>
+    <h4 class="text-center mb-2">Resources to help you fight pollution</h4>
+    <div class="col mx-1 my-1">
+      <div class="card mx-auto btn" data-bs-toggle="modal" data-bs-target="#nursery" style="width: 14rem; height: 7rem;">
+        <img src="{% static '/images/nursery.png' %}" style="width:3rem;" class="card-img-top mx-auto pt-1" alt="...">
+        <div class="card-body">
+          <p class="card-text">Nurseries</p>
         </div>
       </div>
     </div>
-    <div class=" col-sm-5 col-lg-6 mx-lg-5">
-      <div class="row">
-        <img src="{% static '/images/greendelhi1.jpg' %}" class="img-fluid shadow" alt="...">
+    <div class="col mx-1 my-1">
+      <div class="card mx-auto btn" data-bs-toggle="modal" data-bs-target="#nursery" style="width: 14rem; height: 7rem;">
+        <img src="{% static '/images/nursery.png' %}" style="width:3rem;" class="card-img-top mx-auto pt-1" alt="...">
+        <div class="card-body">
+          <p class="card-text">PUC</p>
+        </div>
       </div>
-      <div class="row">
-        <a href="{% url 'stories' %}" class="fs-4 link-dark mt-5 text-center" style="text-decoration:none;">Read about more stories of
-          youth fighting air pollution…</a>
+    </div>
+    <div class="col mx-1 my-1">
+      <div class="card mx-auto btn" data-bs-toggle="modal" data-bs-target="#nursery" style="width: 14rem; height: 7rem;">
+        <img src="{% static '/images/nursery.png' %}" style="width:3rem;" class="card-img-top mx-auto pt-1" alt="...">
+        <div class="card-body">
+          <p class="card-text">EV</p>
+        </div>
+      </div>
+    </div>
+    <div class="col mx-1 my-1">
+      <div class="card mx-auto btn" data-bs-toggle="modal" data-bs-target="#nursery" style="width: 14rem; height: 7rem;">
+        <img src="{% static '/images/nursery.png' %}" style="width:3rem;" class="card-img-top mx-auto pt-1" alt="...">
+        <div class="card-body">
+          <p class="card-text">Recycling</p>
+        </div>
+      </div>
+    </div>
+    <div class="col mx-1 my-1">
+      <div class="card mx-auto btn" data-bs-toggle="modal" data-bs-target="#nursery" style="width: 14rem; height: 7rem;">
+        <img src="{% static '/images/nursery.png' %}" style="width:3rem;" class="card-img-top mx-auto pt-1" alt="...">
+        <div class="card-body">
+          <p class="card-text">C&D Norms</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row mt-1">
+    <div class="col mx-1 my-1">
+      <div class="card mx-auto btn" data-bs-toggle="modal" data-bs-target="#nursery" style="width: 14rem; height: 7rem;">
+        <img src="{% static '/images/nursery.png' %}" style="width:3rem;" class="card-img-top mx-auto pt-1" alt="...">
+        <div class="card-body">
+          <p class="card-text">Bus Finder</p>
+        </div>
+      </div>
+    </div>
+    <div class="col mx-1 my-1">
+      <div class="card mx-auto btn" data-bs-toggle="modal" data-bs-target="#nursery" style="width: 14rem; height: 7rem;">
+        <img src="{% static '/images/nursery.png' %}" style="width:3rem;" class="card-img-top mx-auto pt-1" alt="...">
+        <div class="card-body">
+          <p class="card-text">DMRC Routes</p>
+        </div>
+      </div>
+    </div>
+    <div class="col mx-1 my-1">
+      <div class="card mx-auto btn" data-bs-toggle="modal" data-bs-target="#nursery" style="width: 14rem; height: 7rem;">
+        <img src="{% static '/images/nursery.png' %}" style="width:3rem;" class="card-img-top mx-auto pt-1" alt="...">
+        <div class="card-body">
+          <p class="card-text">Cycling Routes</p>
+        </div>
+      </div>
+    </div>
+    <div class="col mx-1 my-1">
+      <div class="card mx-auto btn" data-bs-toggle="modal" data-bs-target="#nursery" style="width: 14rem; height: 7rem;">
+        <img src="{% static '/images/nursery.png' %}" style="width:3rem;" class="card-img-top mx-auto pt-1" alt="...">
+        <div class="card-body">
+          <p class="card-text">Electric Heater</p>
+        </div>
       </div>
     </div>
   </div>
@@ -168,17 +208,18 @@
     </div>
     <div class="col-sm-3">
       <div class="row">
-        <div class="box">
+        <div class="box mx-auto">
           <div class="body">
-            <div class="imgContainer"> 
+            <div class="imgContainer">
               <img
                 src="https://images.pexels.com/photos/3601422/pexels-photo-3601422.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                alt=""> 
-              </div>
+                alt="">
+            </div>
             <div class="content d-flex flex-column align-items-center justify-content-center">
               <div>
                 <h3 class="text-white fs-5">Post Title</h3>
-                <p class="fs-6 text-white">Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo sed cum neque,
+                <p class="fs-6 text-white">Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo sed cum
+                  neque,
                   rem provident ex. Laboriosam perspiciatis modi eveniet in?</p>
               </div>
             </div>
@@ -186,18 +227,19 @@
         </div>
       </div>
       <div class="row">
-        <div class="box">
+        <div class="box mx-auto">
           <div class="body">
-            <div class="imgContainer"> 
+            <div class="imgContainer">
               <img
                 src="https://images.pexels.com/photos/3601422/pexels-photo-3601422.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                alt=""> 
-              </div>
+                alt="">
+            </div>
             <div class="content d-flex flex-column align-items-center justify-content-center">
               <div>
                 <h3 class="text-white fs-5">Post Title</h3>
-                <p class="fs-6 text-white">Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo sed cum neque,
-                  rem provident ex. Laboriosam perspiciatis modi eveniet in?</p>
+                <p class="fs-6 text-white">Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo sed cum
+                  neque <br> <a href="{% url 'vehicle' %}" style="text-decoration: none;">Click Here to Learn More</a></p>
+                  
               </div>
             </div>
           </div>
@@ -206,17 +248,18 @@
     </div>
     <div class="col-sm-3">
       <div class="row">
-        <div class="box">
+        <div class="box mx-auto">
           <div class="body">
-            <div class="imgContainer"> 
+            <div class="imgContainer">
               <img
                 src="https://images.pexels.com/photos/3601422/pexels-photo-3601422.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                alt=""> 
-              </div>
+                alt="">
+            </div>
             <div class="content d-flex flex-column align-items-center justify-content-center">
               <div>
                 <h3 class="text-white fs-5">Post Title</h3>
-                <p class="fs-6 text-white">Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo sed cum neque,
+                <p class="fs-6 text-white">Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo sed cum
+                  neque,
                   rem provident ex. Laboriosam perspiciatis modi eveniet in?</p>
               </div>
             </div>
@@ -224,17 +267,18 @@
         </div>
       </div>
       <div class="row">
-        <div class="box">
+        <div class="box mx-auto">
           <div class="body">
-            <div class="imgContainer"> 
+            <div class="imgContainer">
               <img
                 src="https://images.pexels.com/photos/3601422/pexels-photo-3601422.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                alt=""> 
-              </div>
+                alt="">
+            </div>
             <div class="content d-flex flex-column align-items-center justify-content-center">
               <div>
                 <h3 class="text-white fs-5">Post Title</h3>
-                <p class="fs-6 text-white">Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo sed cum neque,
+                <p class="fs-6 text-white">Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo sed cum
+                  neque,
                   rem provident ex. Laboriosam perspiciatis modi eveniet in?</p>
               </div>
             </div>
@@ -244,19 +288,19 @@
     </div>
     <div class="col-sm-3 mt-4">
       <div class="row justify-content-center" style="border: 2px solid black; border-radius: 2px;">
-        <a class="twitter-timeline" data-height="620" data-theme="light"
+        <a class="twitter-timeline" data-height="530" data-theme="light"
           href="https://twitter.com/airqualityindia?ref_src=twsrc%5Etfw">Tweets by airqualityindia</a>
         <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
       </div>
     </div>
     <div class="col-sm-3 mt-4">
       <div class="fb-page" style="border: 2px solid black; border-radius: 2px;"
-          data-href="https://www.facebook.com/indiaaq/" data-tabs="timeline" data-width="320" data-height="620"
-          data-small-header="true" data-adapt-container-width="true" data-hide-cover="true" data-show-facepile="true">
-          <blockquote cite="https://www.facebook.com/indiaaq/" class="fb-xfbml-parse-ignore">
-            <a href="https://www.facebook.com/indiaaq/">Air Quality in India</a>
-          </blockquote>
-        </div>
+        data-href="https://www.facebook.com/indiaaq/" data-tabs="timeline" data-width="320" data-height="530"
+        data-small-header="true" data-adapt-container-width="true" data-hide-cover="true" data-show-facepile="true">
+        <blockquote cite="https://www.facebook.com/indiaaq/" class="fb-xfbml-parse-ignore">
+          <a href="https://www.facebook.com/indiaaq/">Air Quality in India</a>
+        </blockquote>
+      </div>
     </div>
   </div>
 </div>
